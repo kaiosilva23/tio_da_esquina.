@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Loja de Espetinhos — Delícias da Esquina</title>
+<meta name="description" content="Loja virtual de espetinhos — escolha, adicione ao carrinho e peça pelo WhatsApp." />
+<style>
+  :root{
+    --bg: #fff8f2;
+    --card: #ffffff;
+    --accent: #ff6a00;
+    --accent-2: #ff9a3c;
+    --muted: #6b6b6b;
+    --glass: rgba(255,255,255,0.6);
+    --success: #25d366;
+  }
+  *{box-sizing:border-box;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;}
+  body{margin:0;background:linear-gradient(180deg,#fff8f2, #fff3e6);color:#222;min-height:100vh}
+  header{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  header h1{margin:0;font-size:20px;display:flex;align-items:center;gap:10px}
+  header .shop-badge{background:rgba(255,255,255,0.15);padding:6px 10px;border-radius:999px;font-weight:700;font-size:13px}
+  .wrap{max-width:1100px;margin:22px auto;padding:18px;display:grid;grid-template-columns:1fr 360px;gap:18px}
+  /* product grid */
+  .products{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+  .card{background:var(--card);border-radius:14px;padding:12px;box-shadow:0 8px 30px rgba(12,12,12,0.06);overflow:hidden;position:relative}
+  .imgbox{height:160px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#fff5ee,#fffaf6);margin-bottom:10px}
+  .imgbox svg{width:110px;height:110px}
+  .title{font-weight:800;font-size:15px;margin-bottom:6px}
+  .desc{color:var(--muted);font-size:13px;margin-bottom:8px}
+  .price{font-weight:800;font-size:16px;color:#222}
+  .tag{display:inline-block;padding:6px 8px;background:#fff7ef;border-radius:10px;color:#b35300;font-size:12px;margin-right:8px}
+  .actions{display:flex;gap:8px;margin-top:10px}
+  .btn{flex:1;padding:10px;border-radius:10px;border:0;cursor:pointer;font-weight:800}
+  .btn-add{background:linear-gradient(180deg,var(--accent),var(--accent-2));color:white}
+  .btn-view{background:#fff;border:1px solid #f0f0f0;color:#222}
+  /* Cart column */
+  .cart{position:sticky;top:18px;background:var(--card);padding:14px;border-radius:14px;box-shadow:0 8px 30px rgba(12,12,12,0.06)}
+  .cart h2{margin:0 0 8px;font-size:16px}
+  .cart-list{max-height:48vh;overflow:auto;margin-bottom:10px}
+  .cart-item{display:flex;gap:10px;align-items:center;border-radius:10px;padding:8px;background:linear-gradient(180deg,#fff,#fff);margin-bottom:8px}
+  .cart-item .ci{width:56px;height:56px;border-radius:8px;background:#fff5ef;display:flex;align-items:center;justify-content:center}
+  .cart-item .meta{flex:1}
+  .cart-item .meta .name{font-weight:700;font-size:14px}
+  .cart-item .meta .q{color:var(--muted);font-size:13px}
+  .qty{display:flex;gap:6px;align-items:center}
+  .qty button{padding:6px 8px;border-radius:8px;border:1px solid #eee;background:transparent;cursor:pointer}
+  .total{display:flex;justify-content:space-between;align-items:center;font-weight:800;font-size:18px;margin-top:6px}
+  .checkout{margin-top:12px;display:flex;gap:8px;flex-direction:column}
+  .btn-order{background:var(--success);color:white;padding:12px;border-radius:10px;border:0;font-weight:800;cursor:pointer}
+  .btn-clear{background:#fff;border:1px solid #eee;padding:10px;border-radius:10px;cursor:pointer}
+  /* modal */
+  .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);z-index:30;padding:18px}
+  .modal .sheet{background:white;padding:18px;border-radius:12px;max-width:720px;width:100%;box-shadow:0 12px 40px rgba(12,12,12,0.2)}
+  .row{display:flex;gap:10px}
+  .center{display:flex;align-items:center;justify-content:center}
+  /* responsive */
+  @media(max-width:980px){.wrap{grid-template-columns:1fr;padding:12px}.cart{position:relative}}
+  /* small niceties */
+  .badge{position:absolute;top:12px;left:12px;background:var(--accent);color:white;padding:6px 10px;border-radius:999px;font-weight:800;font-size:12px;box-shadow:0 6px 18px rgba(232,106,0,0.18)}
+  .hero{display:flex;gap:12px;align-items:center;padding:16px;border-radius:12px;background:linear-gradient(90deg,rgba(255,255,255,0.6),rgba(255,255,255,0.2));box-shadow:0 8px 24px rgba(12,12,12,0.04);margin-bottom:12px}
+  .hero .txt{flex:1}
+  .hero h3{margin:0;font-size:18px}
+  .hero p{margin:6px 0 0;color:var(--muted)}
+  .pill{display:inline-block;padding:8px 12px;border-radius:999px;background:rgba(255,255,255,0.4);font-weight:800}
+  footer{text-align:center;color:var(--muted);font-size:13px;margin-top:18px;padding-bottom:60px}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🍢 Delícias da Esquina</h1>
+  <div class="shop-badge">Aberto agora • Entrega local</div>
+</header>
+
+<main class="wrap">
+
+  <section>
+    <div class="hero">
+      <div class="txt">
+        <h3>Espetinhos artesanais & combos especiais</h3>
+        <p>Escolha seus sabores, adicione ao carrinho e peça em poucos passos pelo WhatsApp.</p>
+      </div>
+      <div class="pill">Promo: Combo Família 10% OFF</div>
+    </div>
+
+    <div class="products" id="products">
+      <!-- product cards injected by JS -->
+    </div>
+
+  </section>
+
+  <aside class="cart" id="cartCard">
+    <h2>Carrinho</h2>
+    <div class="cart-list" id="cartList">
+      <div class="muted">Seu carrinho está vazio — adicione espetinhos deliciosos!</div>
+    </div>
+
+    <div class="total">
+      <div>Total</div>
+      <div id="totalPrice">R$0,00</div>
+    </div>
+
+    <div class="checkout">
+      <input id="buyerName" placeholder="Seu nome (opcional)" style="padding:10px;border-radius:8px;border:1px solid #eee" />
+      <input id="buyerPhone" placeholder="Telefone (DDI+DDD+numero) ex: 5511999887766" style="padding:10px;border-radius:8px;border:1px solid #eee" />
+      <textarea id="buyerNote" placeholder="Observações (endereço, troco, entrega)" style="padding:10px;border-radius:8px;border:1px solid #eee"></textarea>
+      <button class="btn-order" id="orderBtn">📲 Pedir pelo WhatsApp</button>
+      <button class="btn-clear" id="clearBtn">🗑️ Limpar carrinho</button>
+    </div>
+  </aside>
+
+</main>
+
+<!-- modal quick view -->
+<div class="modal" id="modal">
+  <div class="sheet" id="modalSheet">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h3 id="modalTitle">Produto</h3>
+      <button onclick="closeModal()" style="background:#fff;border:0;font-weight:800;cursor:pointer">Fechar ✖</button>
+    </div>
+    <div id="modalDesc" style="margin-top:10px;color:var(--muted)"></div>
+    <div style="display:flex;gap:10px;margin-top:12px;align-items:center">
+      <div style="font-weight:800" id="modalPrice"></div>
+      <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+        <button onclick="modalDec()" style="padding:8px;border-radius:8px;border:1px solid #eee">-</button>
+        <div id="modalQty">1</div>
+        <button onclick="modalInc()" style="padding:8px;border-radius:8px;border:1px solid #eee">+</button>
+        <button id="modalAdd" class="btn" style="background:linear-gradient(180deg,var(--accent),var(--accent-2));color:white">Adicionar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>Feito com ❤️ — Peça pelo WhatsApp e combine entrega/retirada.</footer>
+
+<script>
+// Sample product data (images are inline SVGs created dynamically)
+const PRODUCTS = [
+  {id:1,name:'Espetinho Picanha',desc:'Carne macia, tempero especial.',price:7.50,tag:'Mais vendido',color1:'#ffece6',color2:'#fff5ef'},
+  {id:2,name:'Espetinho Frango',desc:'Frango suculento com ervas.',price:5.50,tag:'Clássico',color1:'#fffaf0',color2:'#fff8f1'},
+  {id:3,name:'Espetinho Linguiça',desc:'Linguiça artesanal defumada.',price:6.00,tag:'Sabor intenso',color1:'#fff5ee',color2:'#fff2ea'},
+  {id:4,name:'Combo 3 Espetos',desc:'Escolha 3 espetos + farofa.',price:17.00,tag:'Economize',color1:'#fff7f0',color2:'#fff3e6'},
+  {id:5,name:'Espetinho Vegetariano',desc:'Coração de alcachofra e legumes.',price:6.50,tag:'Veggie',color1:'#f6fff7',color2:'#f0fff3'},
+  {id:6,name:'Porção de Batata',desc:'Batatas crocantes com molho.',price:8.00,tag:'Acompanhamento',color1:'#fff8f2',color2:'#fff6f0'}
+];
+
+const cart = [];
+
+// Helpers
+const money = v => 'R$' + v.toFixed(2).replace('.',',');
+const el = id => document.getElementById(id);
+
+// Render products
+function renderProducts(){
+  const container = el('products');
+  container.innerHTML = '';
+  PRODUCTS.forEach(p=>{
+    const card = document.createElement('div'); card.className='card';
+    card.innerHTML = `
+      <div class="badge">${p.tag}</div>
+      <div class="imgbox">${renderSVG(p)}</div>
+      <div class="title">${p.name}</div>
+      <div class="desc">${p.desc}</div>
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div class="price">${money(p.price)}</div>
+        <div class="tag">${p.tag}</div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-view" onclick="openModal(${p.id})">Ver</button>
+        <button class="btn btn-add" onclick="addToCart(${p.id},1)">Adicionar</button>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+// Simple inline SVG generator for visual flair
+function renderSVG(p){
+  const svg = `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+    <rect x="0" y="0" width="120" height="120" rx="12" fill="${p.color1}"/>
+    <g transform="translate(10,18)">
+      <rect x="8" y="24" width="80" height="14" rx="6" fill="${p.color2}" opacity="0.9"/>
+      <ellipse cx="48" cy="36" rx="24" ry="10" fill="#ffd1a6" opacity="0.95"/>
+      <rect x="20" y="10" width="60" height="8" rx="4" fill="#e85d04"/>
+      <rect x="28" y="6" width="6" height="34" rx="3" fill="#8b4513"/>
+      <rect x="40" y="6" width="6" height="34" rx="3" fill="#8b4513"/>
+      <rect x="52" y="6" width="6" height="34" rx="3" fill="#8b4513"/>
+    </g>
+  </svg>`;
+  return svg;
+}
+
+// Cart logic
+function findProduct(id){ return PRODUCTS.find(p=>p.id===id); }
+function addToCart(id, qty=1){
+  const prod = findProduct(id);
+  const item = cart.find(c=>c.id===id);
+  if(item) item.qty += qty;
+  else cart.push({id:prod.id,name:prod.name,price:prod.price,qty:qty});
+  renderCart();
+  toast('Adicionado ao carrinho');
+}
+function setQty(id, qty){
+  const item = cart.find(c=>c.id===id);
+  if(!item) return;
+  item.qty = qty;
+  if(item.qty<=0) removeFromCart(id);
+  renderCart();
+}
+function removeFromCart(id){
+  const idx = cart.findIndex(c=>c.id===id);
+  if(idx>=0) cart.splice(idx,1);
+  renderCart();
+}
+function clearCart(){
+  cart.length = 0;
+  renderCart();
+}
+
+// Render cart
+function renderCart(){
+  const list = el('cartList'); list.innerHTML='';
+  if(cart.length===0){
+    list.innerHTML = '<div class="muted">Seu carrinho está vazio — adicione espetinhos!</div>';
+    el('totalPrice').textContent = money(0);
+    return;
+  }
+  let total = 0;
+  cart.forEach(i=>{
+    total += i.price * i.qty;
+    const div = document.createElement('div'); div.className='cart-item';
+    div.innerHTML = `
+      <div class="ci">${i.name.split(' ')[0]}</div>
+      <div class="meta">
+        <div class="name">${i.name}</div>
+        <div class="q">Quantidade: <strong>${i.qty}</strong> • ${money(i.price)} cada</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+        <div class="qty">
+          <button onclick="setQty(${i.id},${i.qty-1})">-</button>
+          <div style="padding:6px 8px;border-radius:8px;border:1px solid #eee">${i.qty}</div>
+          <button onclick="setQty(${i.id},${i.qty+1})">+</button>
+        </div>
+        <button style="background:transparent;border:0;color:#e23;cursor:pointer" onclick="removeFromCart(${i.id})">Remover</button>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+  el('totalPrice').textContent = money(total);
+}
+
+// Modal logic for quick view
+let modalQty = 1;
+let modalProduct = null;
+function openModal(id){
+  const p = findProduct(id); modalProduct = p; modalQty = 1;
+  el('modalTitle').textContent = p.name;
+  el('modalDesc').textContent = p.desc;
+  el('modalPrice').textContent = money(p.price);
+  el('modalQty').textContent = modalQty;
+  el('modal').style.display = 'flex';
+  el('modalAdd').onclick = ()=>{ addToCart(p.id, modalQty); closeModal(); }
+}
+function closeModal(){ el('modal').style.display = 'none'; }
+function modalInc(){ modalQty++; el('modalQty').textContent = modalQty; }
+function modalDec(){ if(modalQty>1) modalQty--; el('modalQty').textContent = modalQty; }
+
+// Order via WhatsApp
+function orderWhatsApp(){
+  if(cart.length===0){ alert('Seu carrinho está vazio'); return; }
+  const buyer = el('buyerName').value.trim();
+  const phone = el('buyerPhone').value.trim();
+  const note = el('buyerNote').value.trim();
+  let lines = [];
+  lines.push(`*Pedido - Delícias da Esquina*`);
+  if(buyer) lines.push(`Nome: ${buyer}`);
+  lines.push('Itens:');
+  cart.forEach(i=> lines.push(`${i.qty}x ${i.name} - ${money(i.price)} cada`));
+  const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
+  lines.push(`Total: ${money(total)}`);
+  if(note) lines.push(`Observações: ${note}`);
+  lines.push('Por favor, confirmar pedido e combinar entrega/retirada 👇');
+  const message = lines.join('\\n');
+  const encoded = encodeURIComponent(message);
+  if(!phone){ /* open generic web.whatsapp to let user paste */ window.open('https://web.whatsapp.com/send?text='+encoded,'_blank'); return; }
+  // wa.me link requires full number without + or spaces
+  const url = `https://wa.me/${phone}?text=${encoded}`;
+  window.open(url,'_blank');
+}
+
+// small toast
+function toast(t){ const d = document.createElement('div'); d.textContent = t; d.style.position='fixed'; d.style.right='18px'; d.style.bottom='18px'; d.style.background='#111'; d.style.color='#fff'; d.style.padding='10px 14px'; d.style.borderRadius='8px'; d.style.zIndex=1000; document.body.appendChild(d); setTimeout(()=>d.remove(),1600); }
+
+// init
+renderProducts(); renderCart();
+el('orderBtn').addEventListener('click', orderWhatsApp);
+el('clearBtn').addEventListener('click', ()=>{ if(confirm('Limpar carrinho?')) clearCart(); });
+
+</script>
+
+</body>
+</html>
